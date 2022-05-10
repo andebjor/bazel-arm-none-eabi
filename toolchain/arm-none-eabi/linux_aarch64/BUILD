@@ -64,7 +64,7 @@ linux_aarch64_filegroup(
 cc_arm_none_eabi_config(
     name = "config",
     gcc_repo = compiler,
-    gcc_version = "9.2.1",
+    gcc_version = "11.2.1",
     host_system_name = "linux_aarch64",
     toolchain_identifier = "arm_none_eabi_linux_aarch64",
     wrapper_path = "arm-none-eabi/linux_aarch64",
