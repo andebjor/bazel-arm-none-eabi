@@ -19,28 +19,6 @@ def _impl(ctx):
         wrapper_path(ctx, "strip"),
     ]
 
-    include_flags = [
-        "-isystem",
-        "external/{}/arm-none-eabi/include".format(ctx.attr.gcc_repo),
-        "-isystem",
-        "external/{}/lib/gcc/arm-none-eabi/{}/include".format(ctx.attr.gcc_repo, ctx.attr.gcc_version),
-        "-isystem",
-        "external/{}/lib/gcc/arm-none-eabi/{}/include-fixed".format(ctx.attr.gcc_repo, ctx.attr.gcc_version),
-        "-isystem",
-        "external/{}/arm-none-eabi/include/c++/{}/".format(ctx.attr.gcc_repo, ctx.attr.gcc_version),
-        "-isystem",
-        "external/{}/arm-none-eabi/include/c++/{}/arm-none-eabi/".format(ctx.attr.gcc_repo, ctx.attr.gcc_version),
-    ]
-
-    linker_flags = [
-        "-L",
-        "external/{}/arm-none-eabi/lib".format(ctx.attr.gcc_repo),
-        "-L",
-        "external/{}/lib/gcc/arm-none-eabi/{}".format(ctx.attr.gcc_repo, ctx.attr.gcc_version),
-        "-llibc.a",
-        "-llibgcc.a",
-    ]
-
     toolchain_compiler_flags = feature(
         name = "compiler_flags",
         enabled = True,
@@ -59,7 +37,12 @@ def _impl(ctx):
                     ACTION_NAMES.clif_match,
                 ],
                 flag_groups = [
-                    flag_group(flags = include_flags),
+                    flag_group(
+                        flags = [
+                            "-no-canonical-prefixes",
+                            "-fno-canonical-system-headers",
+                        ]
+                    ),
                 ],
             ),
         ],
@@ -74,7 +57,16 @@ def _impl(ctx):
                     ACTION_NAMES.linkstamp_compile,
                 ],
                 flag_groups = [
-                    flag_group(flags = linker_flags),
+                    flag_group(
+                        flags = [
+                            "-L",
+                            "external/{}/arm-none-eabi/lib".format(ctx.attr.gcc_repo),
+                            "-L",
+                            "external/{}/lib/gcc/arm-none-eabi/{}".format(ctx.attr.gcc_repo, ctx.attr.gcc_version),
+                            "-llibc.a",
+                            "-llibgcc.a",
+                        ]
+                    ),
                 ],
             ),
         ],
