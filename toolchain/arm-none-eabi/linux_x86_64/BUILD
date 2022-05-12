@@ -1,12 +1,12 @@
-# toolchains/arm-none-eabi/linux/BUILD.bazel
+# toolchains/arm-none-eabi/linux_x86_64/BUILD.bazel
 
-load("@arm_none_eabi//toolchain:config.bzl", "cc_arm_none_eabi_config")
+load("@arm_none_eabi//toolchain:config.bzl", "cc_arm_none_eabi_config", "linux_x86_64_filegroup")
 
 package(default_visibility = ["//visibility:public"])
 
 compiler = "arm_none_eabi_linux_x86_64"
 
-filegroup(
+linux_x86_64_filegroup(
     name = "all_files",
     srcs = [
         ":ar_files",
@@ -16,7 +16,7 @@ filegroup(
     ],
 )
 
-filegroup(
+linux_x86_64_filegroup(
     name = "compiler_files",
     srcs = [
         "arm-none-eabi-gcc",
@@ -25,7 +25,7 @@ filegroup(
     ],
 )
 
-filegroup(
+linux_x86_64_filegroup(
     name = "linker_files",
     srcs = [
         "arm-none-eabi-gcc",
@@ -37,7 +37,7 @@ filegroup(
     ],
 )
 
-filegroup(
+linux_x86_64_filegroup(
     name = "ar_files",
     srcs = [
         "arm-none-eabi-ar",
@@ -45,7 +45,7 @@ filegroup(
     ],
 )
 
-filegroup(
+linux_x86_64_filegroup(
     name = "objcopy_files",
     srcs = [
         "arm-none-eabi-objcopy",
@@ -53,7 +53,7 @@ filegroup(
     ],
 )
 
-filegroup(
+linux_x86_64_filegroup(
     name = "strip_files",
     srcs = [
         "arm-none-eabi-strip",

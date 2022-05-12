@@ -1,4 +1,4 @@
-# toolchains/arm-none-eabi/darwin/config.bzl
+# toolchains/config.bzl
 
 load("@bazel_tools//tools/build_defs/cc:action_names.bzl", "ACTION_NAMES")
 load("@bazel_tools//tools/cpp:cc_toolchain_config_lib.bzl", "feature", "flag_group", "flag_set", "tool_path")
@@ -101,3 +101,40 @@ cc_arm_none_eabi_config = rule(
     },
     provides = [CcToolchainConfigInfo],
 )
+
+def platform_filegroup(name, srcs, platform):
+    native.filegroup(
+        name = name,
+        srcs = select({
+            platform: srcs,
+            "//conditions:default": [],
+        })
+    )
+
+def linux_x86_64_filegroup(name, srcs):
+    platform_filegroup(
+        name = name,
+        srcs = srcs,
+        platform = "//toolchain/host:linux_x86_64",
+    )
+
+def linux_aarch64_filegroup(name, srcs):
+    platform_filegroup(
+        name = name,
+        srcs = srcs,
+        platform = "//toolchain/host:linux_aarch64",
+    )
+
+def darwin_filegroup(name, srcs):
+    platform_filegroup(
+        name = name,
+        srcs = srcs,
+        platform = "@platforms//os:osx",
+    )
+
+def windows_filegroup(name, srcs):
+    platform_filegroup(
+        name = name,
+        srcs = srcs,
+        platform = "@platforms//os:windows",
+    )
