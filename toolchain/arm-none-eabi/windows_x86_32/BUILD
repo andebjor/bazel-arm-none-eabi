@@ -1,12 +1,12 @@
 # toolchains/arm-none-eabi/windows/BUILD.bazel
 
-load("@arm_none_eabi//toolchain:config.bzl", "cc_arm_none_eabi_config")
+load("@arm_none_eabi//toolchain:config.bzl", "cc_arm_none_eabi_config", "windows_filegroup")
 
 package(default_visibility = ["//visibility:public"])
 
 compiler = "arm_none_eabi_windows_x86_32"
 
-filegroup(
+windows_filegroup(
     name = "all_files",
     srcs = [
         ":ar_files",
@@ -16,7 +16,7 @@ filegroup(
     ],
 )
 
-filegroup(
+windows_filegroup(
     name = "compiler_files",
     srcs = [
         "arm-none-eabi-gcc.bat",
@@ -25,7 +25,7 @@ filegroup(
     ],
 )
 
-filegroup(
+windows_filegroup(
     name = "linker_files",
     srcs = [
         "arm-none-eabi-gcc.bat",
@@ -37,7 +37,7 @@ filegroup(
     ],
 )
 
-filegroup(
+windows_filegroup(
     name = "ar_files",
     srcs = [
         "arm-none-eabi-ar.bat",
@@ -45,7 +45,7 @@ filegroup(
     ],
 )
 
-filegroup(
+windows_filegroup(
     name = "objcopy_files",
     srcs = [
         "arm-none-eabi-objcopy.bat",
@@ -53,7 +53,7 @@ filegroup(
     ],
 )
 
-filegroup(
+windows_filegroup(
     name = "strip_files",
     srcs = [
         "arm-none-eabi-strip.bat",
