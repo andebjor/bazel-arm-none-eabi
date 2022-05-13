@@ -1,71 +1,130 @@
-# toolchains/config.bzl
+# toolchain/config.bzl
 
-load("@bazel_tools//tools/build_defs/cc:action_names.bzl", "ACTION_NAMES")
-load("@bazel_tools//tools/cpp:cc_toolchain_config_lib.bzl", "feature", "flag_group", "flag_set", "tool_path")
-
-def wrapper_path(ctx, tool):
-    wrapped_path = "{}/arm-none-eabi-{}{}".format(ctx.attr.wrapper_path, tool, ctx.attr.wrapper_ext)
-    return tool_path(name = tool, path = wrapped_path)
+load(
+    "@rules_cc//cc:action_names.bzl",
+    "ALL_CC_COMPILE_ACTION_NAMES",
+    "ALL_CC_LINK_ACTION_NAMES",
+    "ALL_CPP_COMPILE_ACTION_NAMES",
+)
+load(
+    "@bazel_tools//tools/cpp:cc_toolchain_config_lib.bzl",
+    "feature",
+    "flag_group",
+    "flag_set",
+)
+load(
+    "@arm_none_eabi//toolchain:defs.bzl",
+    "f_feature",
+    "wrapper_path",
+)
 
 def _impl(ctx):
     tool_paths = [
-        wrapper_path(ctx, "gcc"),
-        wrapper_path(ctx, "ld"),
-        wrapper_path(ctx, "ar"),
-        wrapper_path(ctx, "cpp"),
-        wrapper_path(ctx, "gcov"),
-        wrapper_path(ctx, "nm"),
-        wrapper_path(ctx, "objdump"),
-        wrapper_path(ctx, "strip"),
+        wrapper_path(ctx, tool)
+        for tool in [
+            "gcc",
+            "ld",
+            "ar",
+            "cpp",
+            "gcov",
+            "nm",
+            "objdump",
+            "strip",
+        ]
     ]
 
-    toolchain_compiler_flags = feature(
-        name = "compiler_flags",
+    compile_flags_feature = feature(
+        name = "compile_flags",
         enabled = True,
         flag_sets = [
             flag_set(
-                actions = [
-                    ACTION_NAMES.assemble,
-                    ACTION_NAMES.preprocess_assemble,
-                    ACTION_NAMES.linkstamp_compile,
-                    ACTION_NAMES.c_compile,
-                    ACTION_NAMES.cpp_compile,
-                    ACTION_NAMES.cpp_header_parsing,
-                    ACTION_NAMES.cpp_module_compile,
-                    ACTION_NAMES.cpp_module_codegen,
-                    ACTION_NAMES.lto_backend,
-                    ACTION_NAMES.clif_match,
-                ],
+                actions = ALL_CC_COMPILE_ACTION_NAMES,
                 flag_groups = [
                     flag_group(
                         flags = [
                             "-no-canonical-prefixes",
                             "-fno-canonical-system-headers",
-                        ]
+                        ],
                     ),
                 ],
             ),
         ],
     )
 
-    toolchain_linker_flags = feature(
-        name = "linker_flags",
+    link_flags_feature = feature(
+        name = "link_flags",
         enabled = True,
         flag_sets = [
             flag_set(
-                actions = [
-                    ACTION_NAMES.linkstamp_compile,
-                ],
+                actions = ALL_CC_LINK_ACTION_NAMES,
                 flag_groups = [
                     flag_group(
                         flags = [
-                            "-L",
-                            "external/{}/arm-none-eabi/lib".format(ctx.attr.gcc_repo),
-                            "-L",
-                            "external/{}/lib/gcc/arm-none-eabi/{}".format(ctx.attr.gcc_repo, ctx.attr.gcc_version),
-                            "-llibc.a",
-                            "-llibgcc.a",
-                        ]
+                            "-lm",
+                        ],
+                    ),
+                ],
+            ),
+        ],
+    )
+
+    rtti_feature = f_feature(
+        name = "rtti",
+        enabled = False,
+        actions = ALL_CPP_COMPILE_ACTION_NAMES,
+    )
+
+    exceptions_feature = f_feature(
+        name = "exceptions",
+        enabled = False,
+        actions = ALL_CC_COMPILE_ACTION_NAMES,
+    )
+
+    threadsafe_statics_feature = f_feature(
+        name = "threadsafe-statics",
+        enabled = False,
+        actions = ALL_CPP_COMPILE_ACTION_NAMES,
+    )
+
+    lib_stdcxx_feature = feature(
+        name = "libstdc++",
+        enabled = True,
+        flag_sets = [
+            flag_set(
+                actions = ALL_CC_LINK_ACTION_NAMES,
+                flag_groups = [
+                    flag_group(
+                        flags = ["-lstdc++"],
+                    ),
+                ],
+            ),
+        ],
+    )
+
+    nano_feature = feature(
+        name = "nano",
+        enabled = True,
+        flag_sets = [
+            flag_set(
+                actions = ALL_CC_COMPILE_ACTION_NAMES + ALL_CC_LINK_ACTION_NAMES,
+                flag_groups = [
+                    flag_group(
+                        flags = ["-specs=nano.specs"],
+                    ),
+                ],
+            ),
+        ],
+    )
+
+    nosys_feature = feature(
+        name = "nosys",
+        enabled = True,
+        flag_sets = [
+            flag_set(
+                actions = ALL_CC_LINK_ACTION_NAMES,
+                flag_groups = [
+                    flag_group(
+                        flags = ["-specs=nosys.specs"],
                     ),
                 ],
             ),
@@ -84,8 +143,14 @@ def _impl(ctx):
         abi_libc_version = ctx.attr.gcc_version,
         tool_paths = tool_paths,
         features = [
-            toolchain_compiler_flags,
-            toolchain_linker_flags,
+            compile_flags_feature,
+            link_flags_feature,
+            rtti_feature,
+            exceptions_feature,
+            threadsafe_statics_feature,
+            lib_stdcxx_feature,
+            nano_feature,
+            nosys_feature,
         ],
     )
 
@@ -108,7 +173,7 @@ def platform_filegroup(name, srcs, platform):
         srcs = select({
             platform: srcs,
             "//conditions:default": [],
-        })
+        }),
     )
 
 def linux_x86_64_filegroup(name, srcs):
