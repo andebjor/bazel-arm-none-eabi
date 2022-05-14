@@ -1,6 +1,6 @@
 # toolchains/arm-none-eabi/windows/BUILD.bazel
 
-load("@arm_none_eabi//toolchain:config.bzl", "cc_arm_none_eabi_config", "windows_filegroup")
+load("@arm_none_eabi//toolchain:filegroups.bzl", "windows_filegroup")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -59,14 +59,4 @@ windows_filegroup(
         "arm-none-eabi-strip.bat",
         "@{}//:strip".format(compiler),
     ],
-)
-
-cc_arm_none_eabi_config(
-    name = "config",
-    gcc_repo = compiler,
-    gcc_version = "11.2.1",
-    host_system_name = "x86-windows",
-    toolchain_identifier = "arm_none_eabi_windows_x86_32",
-    wrapper_ext = ".bat",
-    wrapper_path = "arm-none-eabi/windows_x86_32",
 )

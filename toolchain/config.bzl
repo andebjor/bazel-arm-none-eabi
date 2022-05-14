@@ -12,6 +12,7 @@ load(
     "flag_group",
     "flag_set",
 )
+load("@arm_none_eabi//:deps.bzl", "gcc_version")
 load(
     "@arm_none_eabi//toolchain:defs.bzl",
     "f_feature",
@@ -32,6 +33,30 @@ def _impl(ctx):
             "strip",
         ]
     ]
+
+    arm_flags = {
+        "arm": [],
+        "armv7-m": [
+            "-mthumb",
+            "-mcpu=cortex-m3",
+            "-mfloat-abi=soft",
+        ],
+    }
+
+    arm_flags_feature = feature(
+        name = "arm_flags",
+        enabled = True,
+        flag_sets = [
+            flag_set(
+                actions = ALL_CC_COMPILE_ACTION_NAMES + ALL_CC_LINK_ACTION_NAMES,
+                flag_groups = [
+                    flag_group(
+                        flags = arm_flags[ctx.attr.target_cpu],
+                    ),
+                ],
+            ),
+        ] if ctx.attr.target_cpu != "arm" else [],
+    )
 
     compile_flags_feature = feature(
         name = "compile_flags",
@@ -140,9 +165,10 @@ def _impl(ctx):
         target_libc = "gcc",
         compiler = ctx.attr.gcc_repo,
         abi_version = "eabi",
-        abi_libc_version = ctx.attr.gcc_version,
+        abi_libc_version = gcc_version,
         tool_paths = tool_paths,
         features = [
+            arm_flags_feature,
             compile_flags_feature,
             link_flags_feature,
             rtti_feature,
@@ -162,61 +188,40 @@ cc_arm_none_eabi_config = rule(
         "wrapper_path": attr.string(default = ""),
         "wrapper_ext": attr.string(default = ""),
         "gcc_repo": attr.string(default = ""),
-        "gcc_version": attr.string(default = ""),
+        "target_cpu": attr.string(default = ""),
     },
     provides = [CcToolchainConfigInfo],
 )
 
-def platform_filegroup(name, srcs, platform):
-    native.filegroup(
-        name = name,
-        srcs = select({
-            platform: srcs,
-            "//conditions:default": [],
-        }),
-    )
-
-def linux_x86_64_filegroup(name, srcs):
-    platform_filegroup(
-        name = name,
-        srcs = srcs,
-        platform = "//toolchain/host:linux_x86_64",
-    )
-
-def linux_aarch64_filegroup(name, srcs):
-    platform_filegroup(
-        name = name,
-        srcs = srcs,
-        platform = "//toolchain/host:linux_aarch64",
-    )
-
-def macos_filegroup(name, srcs):
-    platform_filegroup(
-        name = name,
-        srcs = srcs,
-        platform = "@platforms//os:macos",
-    )
-
-def windows_filegroup(name, srcs):
-    platform_filegroup(
-        name = name,
-        srcs = srcs,
-        platform = "@platforms//os:windows",
-    )
-
 def cross_toolchain(host_os, host_cpu, target_cpu):
     name = "{}_{}-{}".format(host_os, host_cpu, target_cpu)
+
     cc_toolchain_name = "cc_toolchain_{}".format(name)
+
+    # On Windows, no 64bit source is available, so we reuse the 32bit one.
+    host = "{}_{}".format(
+        host_os,
+        "x86_32" if host_os == "windows" else host_cpu,
+    )
+
+    toolchain_identifier = "arm_none_eabi_{}".format(name)
+    toolchain_config = "config_{}".format(name)
 
     def toolpkg(tool):
         return "//toolchain/arm-none-eabi/{host}:{tool}".format(
-            # On Windows, no 64bit source is available, so we reuse the 32bit one.
-            host = "{}_{}".format(
-                host_os,
-                "x86_32" if host_os == "windows" else host_cpu,
-            ),
+            host = host,
             tool = tool,
         )
+
+    cc_arm_none_eabi_config(
+        name = toolchain_config,
+        gcc_repo = "arm_none_eabi_{}".format(host),
+        host_system_name = host,
+        toolchain_identifier = toolchain_identifier,
+        wrapper_path = "arm-none-eabi/{}".format(host),
+        wrapper_ext = ".bat" if host_os == "windows" else "",
+        target_cpu = target_cpu,
+    )
 
     native.cc_toolchain(
         name = cc_toolchain_name,
@@ -228,8 +233,8 @@ def cross_toolchain(host_os, host_cpu, target_cpu):
         objcopy_files = toolpkg("objcopy_files"),
         strip_files = toolpkg("strip_files"),
         supports_param_files = 0,
-        toolchain_config = toolpkg("config"),
-        toolchain_identifier = "arm_none_eabi_{}".format(name),
+        toolchain_config = toolchain_config,
+        toolchain_identifier = toolchain_identifier,
     )
 
     native.toolchain(

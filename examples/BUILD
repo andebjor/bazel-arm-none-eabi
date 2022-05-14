@@ -16,20 +16,12 @@ cc_library(
     name = "mock_library",
     srcs = ["source/library.cpp"],
     hdrs = ["includes/library.h"],
-    copts = [
-        "-mcpu=cortex-a5",
-        "-mthumb",
-    ],
     includes = ["includes"],
 )
 
 cc_binary(
     name = "mock_binary",
     srcs = ["source/main.cpp"],
-    copts = [
-        "-mcpu=cortex-a5",
-        "-mthumb",
-    ],
     linkopts = [
         "-nostartfiles",
         "-Wl,--entry,main",

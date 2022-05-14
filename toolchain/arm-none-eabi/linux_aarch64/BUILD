@@ -1,6 +1,6 @@
 # toolchains/arm-none-eabi/linux_aarch64/BUILD.bazel
 
-load("@arm_none_eabi//toolchain:config.bzl", "cc_arm_none_eabi_config", "linux_aarch64_filegroup")
+load("@arm_none_eabi//toolchain:filegroups.bzl", "linux_aarch64_filegroup")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -59,13 +59,4 @@ linux_aarch64_filegroup(
         "arm-none-eabi-strip",
         "@{}//:strip".format(compiler),
     ],
-)
-
-cc_arm_none_eabi_config(
-    name = "config",
-    gcc_repo = compiler,
-    gcc_version = "11.2.1",
-    host_system_name = "linux_aarch64",
-    toolchain_identifier = "arm_none_eabi_linux_aarch64",
-    wrapper_path = "arm-none-eabi/linux_aarch64",
 )

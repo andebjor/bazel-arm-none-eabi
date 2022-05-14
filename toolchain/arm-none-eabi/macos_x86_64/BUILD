@@ -1,6 +1,6 @@
 # toolchains/arm-none-eabi/macos_x86_64/BUILD.bazel
 
-load("@arm_none_eabi//toolchain:config.bzl", "cc_arm_none_eabi_config", "macos_filegroup")
+load("@arm_none_eabi//toolchain:filegroups.bzl", "macos_filegroup")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -61,11 +61,3 @@ macos_filegroup(
     ],
 )
 
-cc_arm_none_eabi_config(
-    name = "config",
-    gcc_repo = compiler,
-    gcc_version = "11.2.1",
-    host_system_name = "macos_x86_64",
-    toolchain_identifier = "arm_none_eabi_macos_x86_64",
-    wrapper_path = "arm-none-eabi/macos_x86_64",
-)

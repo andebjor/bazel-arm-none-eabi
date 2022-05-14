@@ -7,3 +7,11 @@ config_setting(
         "@platforms//os:none",
     ],
 )
+
+config_setting(
+    name = "armv7-m_none_compatible",
+    constraint_values = [
+        "@platforms//cpu:armv7-m",
+        "@platforms//os:none",
+    ],
+)

@@ -9,7 +9,12 @@ hosts = [
     "windows_x86_32",
     "windows_x86_64",
 ]
-targets = ["arm"]
+targets = [
+    "arm",
+    "armv7-m",
+]
+
+gcc_version = "11.2.1"
 
 def arm_none_eabi_deps():
     """Workspace dependencies for the arm none eabi gcc toolchain"""
