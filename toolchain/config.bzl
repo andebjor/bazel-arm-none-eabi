@@ -190,11 +190,11 @@ def linux_aarch64_filegroup(name, srcs):
         platform = "//toolchain/host:linux_aarch64",
     )
 
-def darwin_filegroup(name, srcs):
+def macos_filegroup(name, srcs):
     platform_filegroup(
         name = name,
         srcs = srcs,
-        platform = "@platforms//os:osx",
+        platform = "@platforms//os:macos",
     )
 
 def windows_filegroup(name, srcs):
@@ -202,4 +202,46 @@ def windows_filegroup(name, srcs):
         name = name,
         srcs = srcs,
         platform = "@platforms//os:windows",
+    )
+
+def cross_toolchain(host_os, host_cpu, target_cpu):
+    name = "{}_{}-{}".format(host_os, host_cpu, target_cpu)
+    cc_toolchain_name = "cc_toolchain_{}".format(name)
+
+    def toolpkg(tool):
+        return "//toolchain/arm-none-eabi/{host}:{tool}".format(
+            # On Windows, no 64bit source is available, so we reuse the 32bit one.
+            host = "{}_{}".format(
+                host_os,
+                "x86_32" if host_os == "windows" else host_cpu,
+            ),
+            tool = tool,
+        )
+
+    native.cc_toolchain(
+        name = cc_toolchain_name,
+        all_files = toolpkg("all_files"),
+        ar_files = toolpkg("ar_files"),
+        compiler_files = toolpkg("compiler_files"),
+        dwp_files = ":empty",
+        linker_files = toolpkg("linker_files"),
+        objcopy_files = toolpkg("objcopy_files"),
+        strip_files = toolpkg("strip_files"),
+        supports_param_files = 0,
+        toolchain_config = toolpkg("config"),
+        toolchain_identifier = "arm_none_eabi_{}".format(name),
+    )
+
+    native.toolchain(
+        name = name,
+        exec_compatible_with = [
+            "@platforms//os:{}".format(host_os),
+            "@platforms//cpu:{}".format(host_cpu),
+        ],
+        target_compatible_with = [
+            "@platforms//os:none",
+            "@platforms//cpu:{}".format(target_cpu),
+        ],
+        toolchain = ":{}".format(cc_toolchain_name),
+        toolchain_type = "@bazel_tools//tools/cpp:toolchain_type",
     )

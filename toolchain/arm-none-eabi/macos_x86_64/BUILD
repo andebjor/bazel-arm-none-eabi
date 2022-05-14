@@ -1,12 +1,12 @@
-# toolchains/arm-none-eabi/darwin/BUILD.bazel
+# toolchains/arm-none-eabi/macos_x86_64/BUILD.bazel
 
-load("@arm_none_eabi//toolchain:config.bzl", "cc_arm_none_eabi_config", "darwin_filegroup")
+load("@arm_none_eabi//toolchain:config.bzl", "cc_arm_none_eabi_config", "macos_filegroup")
 
 package(default_visibility = ["//visibility:public"])
 
-compiler = "arm_none_eabi_darwin_x86_64"
+compiler = "arm_none_eabi_macos_x86_64"
 
-darwin_filegroup(
+macos_filegroup(
     name = "all_files",
     srcs = [
         ":ar_files",
@@ -16,7 +16,7 @@ darwin_filegroup(
     ],
 )
 
-darwin_filegroup(
+macos_filegroup(
     name = "compiler_files",
     srcs = [
         "arm-none-eabi-gcc",
@@ -25,7 +25,7 @@ darwin_filegroup(
     ],
 )
 
-darwin_filegroup(
+macos_filegroup(
     name = "linker_files",
     srcs = [
         "arm-none-eabi-gcc",
@@ -37,7 +37,7 @@ darwin_filegroup(
     ],
 )
 
-darwin_filegroup(
+macos_filegroup(
     name = "ar_files",
     srcs = [
         "arm-none-eabi-ar",
@@ -45,7 +45,7 @@ darwin_filegroup(
     ],
 )
 
-darwin_filegroup(
+macos_filegroup(
     name = "objcopy_files",
     srcs = [
         "arm-none-eabi-objcopy",
@@ -53,7 +53,7 @@ darwin_filegroup(
     ],
 )
 
-darwin_filegroup(
+macos_filegroup(
     name = "strip_files",
     srcs = [
         "arm-none-eabi-strip",
@@ -65,7 +65,7 @@ cc_arm_none_eabi_config(
     name = "config",
     gcc_repo = compiler,
     gcc_version = "11.2.1",
-    host_system_name = "darwin_x86_64",
-    toolchain_identifier = "arm_none_eabi_darwin_x86_64",
-    wrapper_path = "arm-none-eabi/darwin_x86_64",
+    host_system_name = "macos_x86_64",
+    toolchain_identifier = "arm_none_eabi_macos_x86_64",
+    wrapper_path = "arm-none-eabi/macos_x86_64",
 )

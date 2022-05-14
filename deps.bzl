@@ -2,11 +2,20 @@
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
+hosts = [
+    "macos_x86_64",
+    "linux_x86_64",
+    "linux_aarch64",
+    "windows_x86_32",
+    "windows_x86_64",
+]
+targets = ["arm"]
+
 def arm_none_eabi_deps():
     """Workspace dependencies for the arm none eabi gcc toolchain"""
 
     http_archive(
-        name = "arm_none_eabi_darwin_x86_64",
+        name = "arm_none_eabi_macos_x86_64",
         build_file = "@arm_none_eabi//toolchain:compiler.BUILD",
         sha256 = "31d6d3b400db89e204ab1a7ff3f4bb6230d2cdf5a551514ae9deedeebbb07bac",
         strip_prefix = "gcc-arm-11.2-2022.02-darwin-x86_64-arm-none-eabi",
@@ -38,9 +47,9 @@ def arm_none_eabi_deps():
     )
 
     native.register_toolchains(
-        "@arm_none_eabi//toolchain:macos_x86_64",
-        "@arm_none_eabi//toolchain:linux_x86_64",
-        "@arm_none_eabi//toolchain:linux_aarch64",
-        "@arm_none_eabi//toolchain:windows_x86_32",
-        "@arm_none_eabi//toolchain:windows_x86_64",
+        *[
+            "@arm_none_eabi//toolchain:{host}-{target}".format(host = host, target = target)
+            for host in hosts
+            for target in targets
+        ]
     )
