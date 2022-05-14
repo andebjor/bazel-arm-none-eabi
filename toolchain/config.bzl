@@ -1,13 +1,17 @@
 # toolchain/config.bzl
 
 load(
+    "@rules_cc//cc:defs.bzl",
+    "cc_toolchain",
+)
+load(
     "@rules_cc//cc:action_names.bzl",
     "ALL_CC_COMPILE_ACTION_NAMES",
     "ALL_CC_LINK_ACTION_NAMES",
     "ALL_CPP_COMPILE_ACTION_NAMES",
 )
 load(
-    "@bazel_tools//tools/cpp:cc_toolchain_config_lib.bzl",
+    "@rules_cc//cc:cc_toolchain_config_lib.bzl",
     "feature",
     "flag_group",
     "flag_set",
@@ -18,6 +22,19 @@ load(
     "f_feature",
     "wrapper_path",
 )
+
+def arm_flags(cpu):
+    if cpu == "arm":
+        return []
+
+    return [
+        "{opt}={value}".format(
+            opt = "-march" if cpu.startswith("arm") else "-mcpu",
+            value = cpu,
+        ),
+        "-mthumb",
+        "-mfloat-abi=soft",
+    ]
 
 def _impl(ctx):
     tool_paths = [
@@ -34,15 +51,6 @@ def _impl(ctx):
         ]
     ]
 
-    arm_flags = {
-        "arm": [],
-        "armv7-m": [
-            "-mthumb",
-            "-mcpu=cortex-m3",
-            "-mfloat-abi=soft",
-        ],
-    }
-
     arm_flags_feature = feature(
         name = "arm_flags",
         enabled = True,
@@ -51,7 +59,7 @@ def _impl(ctx):
                 actions = ALL_CC_COMPILE_ACTION_NAMES + ALL_CC_LINK_ACTION_NAMES,
                 flag_groups = [
                     flag_group(
-                        flags = arm_flags[ctx.attr.target_cpu],
+                        flags = arm_flags(ctx.attr.target_cpu),
                     ),
                 ],
             ),
@@ -161,7 +169,7 @@ def _impl(ctx):
         toolchain_identifier = ctx.attr.toolchain_identifier,
         host_system_name = ctx.attr.host_system_name,
         target_system_name = "arm-none-eabi",
-        target_cpu = "arm-none-eabi",
+        target_cpu = ctx.attr.target_cpu,
         target_libc = "gcc",
         compiler = ctx.attr.gcc_repo,
         abi_version = "eabi",
@@ -223,7 +231,7 @@ def cross_toolchain(host_os, host_cpu, target_cpu):
         target_cpu = target_cpu,
     )
 
-    native.cc_toolchain(
+    cc_toolchain(
         name = cc_toolchain_name,
         all_files = toolpkg("all_files"),
         ar_files = toolpkg("ar_files"),
@@ -245,8 +253,8 @@ def cross_toolchain(host_os, host_cpu, target_cpu):
         ],
         target_compatible_with = [
             "@platforms//os:none",
-            "@platforms//cpu:{}".format(target_cpu),
+            "@arm_none_eabi//platforms/cpu:{}".format(target_cpu),
         ],
         toolchain = ":{}".format(cc_toolchain_name),
-        toolchain_type = "@bazel_tools//tools/cpp:toolchain_type",
+        toolchain_type = "@rules_cc//cc:toolchain_type",
     )

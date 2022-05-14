@@ -12,7 +12,11 @@ hosts = [
 targets = [
     "arm",
     "armv7-m",
+    "cortex-m3",
 ]
+architecture = {
+    "cortex-m3": "armv7-m",
+}
 
 gcc_version = "11.2.1"
 

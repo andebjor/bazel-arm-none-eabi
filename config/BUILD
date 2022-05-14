@@ -1,17 +1,16 @@
 # config/BUILD
 
-config_setting(
-    name = "arm_none_compatible",
-    constraint_values = [
-        "@platforms//cpu:arm",
-        "@platforms//os:none",
-    ],
-)
+load("@arm_none_eabi//:deps.bzl", "targets")
 
-config_setting(
-    name = "armv7-m_none_compatible",
-    constraint_values = [
-        "@platforms//cpu:armv7-m",
-        "@platforms//os:none",
-    ],
-)
+package(default_visibility = ["//visibility:public"])
+
+[
+    config_setting(
+        name = "{}_compatible".format(cpu),
+        constraint_values = [
+            "@platforms//os:none",
+            "@arm_none_eabi//platforms/cpu:{}".format(cpu),
+        ],
+    )
+    for cpu in targets
+]
