@@ -13,9 +13,14 @@ targets = [
     "arm",
     "armv7-m",
     "cortex-m3",
+    "armv7e-m",
+    "cortex-m4",
+    "cortex-m7",
 ]
 architecture = {
     "cortex-m3": "armv7-m",
+    "cortex-m4": "armv7e-m",
+    "cortex-m7": "armv7e-m",
 }
 
 gcc_version = "11.2.1"

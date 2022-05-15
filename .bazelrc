@@ -2,6 +2,12 @@
 
 # Build using platforms by default
 build --incompatible_enable_cc_toolchain_resolution
-build --platforms=@arm_none_eabi//platforms:cortex-m3
-#build --platforms=@arm_none_eabi//platforms:armv7-m
-#build --platforms=@arm_none_eabi//platforms:arm_none_generic
+
+build:m3 --platforms=@arm_none_eabi//platforms:cortex-m3
+build:m3 --platform_suffix=m3
+
+build:m4 --platforms=@arm_none_eabi//platforms:cortex-m4
+build:m4 --platform_suffix=m4
+
+build:arm --platforms=@arm_none_eabi//platforms:arm
+build:arm --platform_suffix=arm
