@@ -17,7 +17,7 @@ config_setting(
     values = {"host_cpu": "x64_windows"},
 )
 
-filegroup(
+sh_binary(
     name = "gcc",
     srcs = select({
         "macos": ["@arm_none_eabi_macos_x86_64//:bin/arm-none-eabi-gcc"],
@@ -26,7 +26,7 @@ filegroup(
     }),
 )
 
-filegroup(
+sh_binary(
     name = "ar",
     srcs = select({
         "macos": ["@arm_none_eabi_macos_x86_64//:bin/arm-none-eabi-ar"],
@@ -35,7 +35,7 @@ filegroup(
     }),
 )
 
-filegroup(
+sh_binary(
     name = "ld",
     srcs = select({
         "macos": ["@arm_none_eabi_macos_x86_64//:bin/arm-none-eabi-ld"],
@@ -44,7 +44,7 @@ filegroup(
     }),
 )
 
-filegroup(
+sh_binary(
     name = "nm",
     srcs = select({
         "macos": ["@arm_none_eabi_macos_x86_64//:bin/arm-none-eabi-nm"],
@@ -53,7 +53,7 @@ filegroup(
     }),
 )
 
-filegroup(
+sh_binary(
     name = "objcopy",
     srcs = select({
         "macos": ["@arm_none_eabi_macos_x86_64//:bin/arm-none-eabi-objcopy"],
@@ -62,7 +62,7 @@ filegroup(
     }),
 )
 
-filegroup(
+sh_binary(
     name = "objdump",
     srcs = select({
         "macos": ["@arm_none_eabi_macos_x86_64//:bin/arm-none-eabi-objdump"],
@@ -71,7 +71,7 @@ filegroup(
     }),
 )
 
-filegroup(
+sh_binary(
     name = "strip",
     srcs = select({
         "macos": ["@arm_none_eabi_macos_x86_64//:bin/arm-none-eabi-strip"],
@@ -80,7 +80,7 @@ filegroup(
     }),
 )
 
-filegroup(
+sh_binary(
     name = "as",
     srcs = select({
         "macos": ["@arm_none_eabi_macos_x86_64//:bin/arm-none-eabi-as"],
@@ -89,7 +89,7 @@ filegroup(
     }),
 )
 
-filegroup(
+sh_binary(
     name = "gdb",
     srcs = select({
         "macos": ["@arm_none_eabi_macos_x86_64//:bin/arm-none-eabi-gdb"],
