@@ -23,6 +23,12 @@ architecture = {
     "cortex-m7": "armv7e-m",
 }
 
+def has_float_abi(cpu):
+    arch = [
+        "armv7e-m",
+    ]
+    return cpu in arch or architecture.get(cpu, "") in arch
+
 gcc_version = "11.2.1"
 
 def arm_none_eabi_deps():

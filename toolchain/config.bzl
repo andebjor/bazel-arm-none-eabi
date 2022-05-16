@@ -16,9 +16,14 @@ load(
     "flag_group",
     "flag_set",
 )
-load("@arm_none_eabi//:deps.bzl", "gcc_version")
+load(
+    "@arm_none_eabi//:deps.bzl",
+    "gcc_version",
+    "has_float_abi",
+)
 load(
     "@arm_none_eabi//toolchain:defs.bzl",
+    "exclusive_features",
     "f_feature",
     "wrapper_path",
 )
@@ -33,7 +38,6 @@ def arm_flags(cpu):
             value = cpu,
         ),
         "-mthumb",
-        "-mfloat-abi=soft",
     ]
 
 def _impl(ctx):
@@ -51,19 +55,46 @@ def _impl(ctx):
         ]
     ]
 
-    arm_flags_feature = feature(
-        name = "arm_flags",
-        enabled = True,
-        flag_sets = [
-            flag_set(
-                actions = ALL_CC_COMPILE_ACTION_NAMES + ALL_CC_LINK_ACTION_NAMES,
-                flag_groups = [
-                    flag_group(
-                        flags = arm_flags(ctx.attr.target_cpu),
+    arm_features = [] if ctx.attr.target_cpu == "arm" else (
+        [
+            feature(
+                name = "arm_flags",
+                enabled = True,
+                flag_sets = [
+                    flag_set(
+                        actions = ALL_CC_COMPILE_ACTION_NAMES + ALL_CC_LINK_ACTION_NAMES,
+                        flag_groups = [
+                            flag_group(
+                                flags = arm_flags(ctx.attr.target_cpu),
+                            ),
+                        ],
                     ),
                 ],
             ),
-        ] if ctx.attr.target_cpu != "arm" else [],
+        ] +
+        exclusive_features(
+            configs =
+                [
+                    {
+                        "name": "float-abi-soft",
+                        "flags": ["-mfloat-abi=soft"],
+                    },
+                ] +
+                (
+                    [
+                        {
+                            "name": "float-abi-softfp",
+                            "flags": ["-mfloat-abi=softfp"],
+                        },
+                        {
+                            "name": "float-abi-hard",
+                            "flags": ["-mfloat-abi=hard"],
+                        },
+                    ] if has_float_abi(ctx.attr.target_cpu) else []
+                ),
+            actions = ALL_CC_COMPILE_ACTION_NAMES + ALL_CC_LINK_ACTION_NAMES,
+            enabled = "float-abi-hard" if has_float_abi(ctx.attr.target_cpu) else "float-abi-soft",
+        )
     )
 
     compile_flags_feature = feature(
@@ -175,17 +206,17 @@ def _impl(ctx):
         abi_version = "eabi",
         abi_libc_version = gcc_version,
         tool_paths = tool_paths,
-        features = [
-            arm_flags_feature,
-            compile_flags_feature,
-            link_flags_feature,
-            rtti_feature,
-            exceptions_feature,
-            threadsafe_statics_feature,
-            lib_stdcxx_feature,
-            nano_feature,
-            nosys_feature,
-        ],
+        features = arm_features +
+                   [
+                       compile_flags_feature,
+                       link_flags_feature,
+                       rtti_feature,
+                       exceptions_feature,
+                       threadsafe_statics_feature,
+                       lib_stdcxx_feature,
+                       nano_feature,
+                       nosys_feature,
+                   ],
     )
 
 cc_arm_none_eabi_config = rule(

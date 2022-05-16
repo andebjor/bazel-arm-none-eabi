@@ -58,3 +58,32 @@ def f_feature(name, enabled, actions, flag = None):
             flagbases = [flag],
         ),
     )
+
+def exclusive_features(configs, actions, enabled = None):
+    names = [c["name"] for c in configs]
+
+    if not (not enabled or enabled in names):
+        fail("`enabled` must be false or in {}".format(names))
+
+    return [
+        feature(
+            name = c["name"],
+            enabled = enabled == c["name"],
+            flag_sets = [
+                flag_set(
+                    actions = actions,
+                    flag_groups = [
+                        flag_group(
+                            flags = c["flags"],
+                        ),
+                    ],
+                    with_features = [
+                        with_feature_set(
+                            not_features = [n for n in names if n != c["name"]],
+                        ),
+                    ],
+                ),
+            ],
+        )
+        for c in configs
+    ]
