@@ -91,7 +91,8 @@ sh_binary(
 
 sh_binary(
     name = "gdb",
-    srcs = select({
+    srcs = ["scripts/from_exec_root.sh"],
+    data = select({
         "macos": ["@arm_none_eabi_macos_x86_64//:bin/arm-none-eabi-gdb"],
         "linux": ["@arm_none_eabi_linux_x86_64//:bin/arm-none-eabi-gdb"],
         "windows": ["@arm_none_eabi_windows_x86_32//:bin/arm-none-eabi-gdb.exe"],
