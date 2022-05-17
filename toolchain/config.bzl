@@ -15,6 +15,7 @@ load(
     "feature",
     "flag_group",
     "flag_set",
+    "with_feature_set",
 )
 load(
     "@arm_none_eabi//:deps.bzl",
@@ -97,6 +98,8 @@ def _impl(ctx):
         )
     )
 
+    dbg_feature = feature(name = "dbg")
+
     compile_flags_feature = feature(
         name = "compile_flags",
         enabled = True,
@@ -111,6 +114,17 @@ def _impl(ctx):
                         ],
                     ),
                 ],
+            ),
+            flag_set(
+                actions = ALL_CC_COMPILE_ACTION_NAMES,
+                flag_groups = [
+                    flag_group(
+                        flags = [
+                            "-g",
+                        ],
+                    ),
+                ],
+                with_features = [with_feature_set(features = ["dbg"])],
             ),
         ],
     )
@@ -208,6 +222,7 @@ def _impl(ctx):
         tool_paths = tool_paths,
         features = arm_features +
                    [
+                       dbg_feature,
                        compile_flags_feature,
                        link_flags_feature,
                        rtti_feature,
