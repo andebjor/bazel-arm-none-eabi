@@ -118,13 +118,7 @@ def _impl(ctx):
             ),
             flag_set(
                 actions = ALL_CC_COMPILE_ACTION_NAMES,
-                flag_groups = [
-                    flag_group(
-                        flags = [
-                            "-g",
-                        ],
-                    ),
-                ],
+                flag_groups = [flag_group(flags = ["-g"])],
                 with_features = [with_feature_set(features = ["dbg"])],
             ),
         ],
@@ -136,13 +130,22 @@ def _impl(ctx):
         flag_sets = [
             flag_set(
                 actions = ALL_CC_LINK_ACTION_NAMES,
-                flag_groups = [
-                    flag_group(
-                        flags = [
-                            "-lm",
-                        ],
-                    ),
-                ],
+                flag_groups = [flag_group(flags = ["-lm"])],
+            ),
+        ],
+    )
+
+    treat_warnings_as_errors_feature = feature(
+        name = "treat_warnings_as_errors",
+        enabled = True,
+        flag_sets = [
+            flag_set(
+                actions = ALL_CC_COMPILE_ACTION_NAMES,
+                flag_groups = [flag_group(flags = ["-Werror"])],
+            ),
+            flag_set(
+                actions = ALL_CC_LINK_ACTION_NAMES,
+                flag_groups = [flag_group(flags = ["-Wl,--fatal-warnings"])],
             ),
         ],
     )
@@ -226,6 +229,7 @@ def _impl(ctx):
                        dbg_feature,
                        compile_flags_feature,
                        link_flags_feature,
+                       treat_warnings_as_errors_feature,
                        rtti_feature,
                        exceptions_feature,
                        threadsafe_statics_feature,
