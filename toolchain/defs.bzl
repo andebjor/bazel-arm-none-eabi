@@ -9,6 +9,27 @@ load(
     "with_feature_set",
 )
 
+warnings = [
+    "-Wall",
+    "-Wextra",
+    "-Wnon-virtual-dtor",
+    "-Wold-style-cast",
+    "-Wcast-align",
+    "-Wunused",
+    "-Woverloaded-virtual",
+    "-Wpedantic",
+    "-Wconversion",
+    "-Wsign-conversion",
+    "-Wdouble-promotion",
+    "-Wformat=2",
+    "-Wshadow=compatible-local",
+    "-Wlogical-op",
+    "-Wuseless-cast",
+    "-Wduplicated-cond",
+    "-Wduplicated-branches",
+    "-Wmisleading-indentation",
+]
+
 def wrapper_path(ctx, tool):
     wrapped_path = "{}/arm-none-eabi-{}{}".format(ctx.attr.wrapper_path, tool, ctx.attr.wrapper_ext)
     return tool_path(name = tool, path = wrapped_path)

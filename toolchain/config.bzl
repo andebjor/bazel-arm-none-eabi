@@ -26,6 +26,7 @@ load(
     "@arm_none_eabi//toolchain:defs.bzl",
     "exclusive_features",
     "f_feature",
+    "warnings",
     "wrapper_path",
 )
 
@@ -111,7 +112,7 @@ def _impl(ctx):
                         flags = [
                             "-no-canonical-prefixes",
                             "-fno-canonical-system-headers",
-                        ],
+                        ] + warnings,
                     ),
                 ],
             ),
