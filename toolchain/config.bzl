@@ -112,6 +112,8 @@ def _impl(ctx):
                         flags = [
                             "-no-canonical-prefixes",
                             "-fno-canonical-system-headers",
+                            "-fno-common",
+                            "-fdiagnostics-color",
                         ] + warnings,
                     ),
                 ],
@@ -130,7 +132,11 @@ def _impl(ctx):
         flag_sets = [
             flag_set(
                 actions = ALL_CC_LINK_ACTION_NAMES,
-                flag_groups = [flag_group(flags = ["-lm"])],
+                flag_groups = [flag_group(flags = [
+                    "-lm",
+                    "-Wl,--print-memory-usage",
+                    "-Wl,--warn-common",
+                ])],
             ),
         ],
     )
