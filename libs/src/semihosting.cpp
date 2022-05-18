@@ -10,7 +10,8 @@ namespace arm::semihosting {
 
 void init() { initialise_monitor_handles(); }
 
-void exit(int ec)
+void __attribute__((optimize("O0")))
+exit(int ec)
 {
     // https://github.com/ARM-software/abi-aa/blob/main/semihosting/semihosting.rst#sys-exit-extended-0x20
 

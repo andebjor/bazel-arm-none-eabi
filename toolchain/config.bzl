@@ -114,6 +114,8 @@ def _impl(ctx):
                             "-fno-canonical-system-headers",
                             "-fno-common",
                             "-fdiagnostics-color",
+                            "-fstack-usage",
+                            "-Os",
                         ] + warnings,
                     ),
                 ],
