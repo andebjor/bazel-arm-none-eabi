@@ -156,6 +156,28 @@ def _impl(ctx):
         ],
     )
 
+    gc_sections_feature = feature(
+        name = "gc_sections",
+        enabled = True,
+        flag_sets = [
+            flag_set(
+                actions = ALL_CC_COMPILE_ACTION_NAMES,
+                flag_groups = [flag_group(flags = [
+                    "-fdata-sections",
+                    "-ffunction-sections",
+                ])],
+            ),
+            flag_set(
+                actions = ALL_CC_LINK_ACTION_NAMES,
+                flag_groups = [flag_group(flags = [
+                    "-Wl,--gc-sections",
+                    # TODO add a verbose variant of this feature
+                    #"-Wl,--print-gc-sections",
+                ])],
+            ),
+        ],
+    )
+
     rtti_feature = f_feature(
         name = "rtti",
         enabled = False,
@@ -236,6 +258,7 @@ def _impl(ctx):
                        compile_flags_feature,
                        link_flags_feature,
                        treat_warnings_as_errors_feature,
+                       gc_sections_feature,
                        rtti_feature,
                        exceptions_feature,
                        threadsafe_statics_feature,
