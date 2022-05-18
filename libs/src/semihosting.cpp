@@ -14,22 +14,20 @@ void exit(int ec)
 {
     // https://github.com/ARM-software/abi-aa/blob/main/semihosting/semihosting.rst#sys-exit-extended-0x20
 
-    static constexpr auto SYS_EXIT_EXTENDED = 0x20U;
+    static constexpr std::int32_t SYS_EXIT_EXTENDED = 0x20U;
+    static constexpr std::int32_t ADP_Stopped_ApplicationExit = 0x20026;
 
-    static constexpr auto ADP_Stopped_ApplicationExit = 0x20026;
-
-    const std::uint32_t argblock[2] = {
+    const std::int32_t argblock[2] = {
         ADP_Stopped_ApplicationExit,
-        static_cast<std::uint32_t>(ec)
+        static_cast<std::int32_t>(ec)
     };
 
-    register std::uint32_t r0 __asm__("r0");
-    r0 = SYS_EXIT_EXTENDED;
+    register std::int32_t r0 asm("r0") = SYS_EXIT_EXTENDED;
+    register const std::int32_t* r1 asm("r1") = argblock;
 
-    register const std::uint32_t* r1 __asm__("r1");
-    r1 = argblock;
-
-    __asm__ volatile("bkpt #0xAB");
+    (void)r0;
+    (void)r1;
+    asm volatile("bkpt #0xAB");
 }
 
 }

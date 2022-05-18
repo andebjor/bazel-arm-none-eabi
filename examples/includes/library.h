@@ -1,4 +1,4 @@
-#include <stdint.h>
+#include <cstdint>
 
-uint16_t baz(uint8_t var);
-uint32_t foo(void);
+std::uint16_t baz(std::uint8_t var);
+std::uint32_t foo();
