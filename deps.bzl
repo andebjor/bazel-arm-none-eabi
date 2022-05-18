@@ -37,9 +37,9 @@ def arm_none_eabi_deps():
     http_archive(
         name = "arm_none_eabi_macos_x86_64",
         build_file = "@arm_none_eabi//toolchain:compiler.BUILD",
-        sha256 = "31d6d3b400db89e204ab1a7ff3f4bb6230d2cdf5a551514ae9deedeebbb07bac",
-        strip_prefix = "gcc-arm-11.2-2022.02-darwin-x86_64-arm-none-eabi",
-        url = "https://developer.arm.com/-/media/Files/downloads/gnu/11.2-2022.02/binrel/gcc-arm-11.2-2022.02-darwin-x86_64-arm-none-eabi.tar.xz",
+        #sha256 = "31d6d3b400db89e204ab1a7ff3f4bb6230d2cdf5a551514ae9deedeebbb07bac",
+        strip_prefix = "gcc-arm-none-eabi-10.3-2021.10",
+        url = "https://developer.arm.com/-/media/Files/downloads/gnu-rm/10.3-2021.10/gcc-arm-none-eabi-10.3-2021.10-mac.tar.bz2",
     )
 
     http_archive(
