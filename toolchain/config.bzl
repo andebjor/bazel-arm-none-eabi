@@ -115,6 +115,7 @@ def _impl(ctx):
                             "-fno-common",
                             "-fdiagnostics-color",
                             "-fstack-usage",
+                            "-ffreestanding",
                             "-Os",
                         ] + warnings,
                     ),
