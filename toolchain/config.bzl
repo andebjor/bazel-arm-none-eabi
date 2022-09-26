@@ -9,6 +9,7 @@ load(
     "ALL_CC_COMPILE_ACTION_NAMES",
     "ALL_CC_LINK_ACTION_NAMES",
     "ALL_CPP_COMPILE_ACTION_NAMES",
+    "C_COMPILE_ACTION_NAME",
 )
 load(
     "@rules_cc//cc:cc_toolchain_config_lib.bzl",
@@ -26,7 +27,9 @@ load(
     "@arm_none_eabi//toolchain:defs.bzl",
     "exclusive_features",
     "f_feature",
-    "warnings",
+    "common_warnings",
+    "cpp_warnings",
+    "c_warnings",
     "wrapper_path",
 )
 
@@ -117,7 +120,23 @@ def _impl(ctx):
                             "-fstack-usage",
                             "-ffreestanding",
                             "-Os",
-                        ] + warnings,
+                        ] + common_warnings,
+                    ),
+                ],
+            ),
+            flag_set(
+                actions = ALL_CPP_COMPILE_ACTION_NAMES,
+                flag_groups = [
+                    flag_group(
+                        flags = cpp_warnings,
+                    ),
+                ],
+            ),
+            flag_set(
+                actions = [C_COMPILE_ACTION_NAME],
+                flag_groups = [
+                    flag_group(
+                        flags = c_warnings,
                     ),
                 ],
             ),

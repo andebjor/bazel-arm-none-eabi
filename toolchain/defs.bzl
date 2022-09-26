@@ -9,14 +9,11 @@ load(
     "with_feature_set",
 )
 
-warnings = [
+common_warnings = [
     "-Wall",
     "-Wextra",
-    "-Wnon-virtual-dtor",
-    "-Wold-style-cast",
     "-Wcast-align",
     "-Wunused",
-    "-Woverloaded-virtual",
     "-Wpedantic",
     "-Wconversion",
     "-Wsign-conversion",
@@ -24,10 +21,24 @@ warnings = [
     "-Wformat=2",
     "-Wshadow=compatible-local",
     "-Wlogical-op",
-    "-Wuseless-cast",
     "-Wduplicated-cond",
     "-Wduplicated-branches",
     "-Wmisleading-indentation",
+]
+cpp_warnings = [
+    "-Wnon-virtual-dtor",
+    "-Wold-style-cast",
+    "-Woverloaded-virtual",
+    "-Wuseless-cast",
+]
+
+c_warnings = [
+    "-Wbad-function-cast",
+    "-Wjump-misses-init",
+    "-Wstrict-prototypes",
+    "-Wold-style-declaration",
+    "-Wold-style-definition",
+    "-Wnested-externs",
 ]
 
 def wrapper_path(ctx, tool):
