@@ -171,6 +171,10 @@ def _impl(ctx):
                 actions = ALL_CC_COMPILE_ACTION_NAMES,
                 flag_groups = [flag_group(flags = ["-Werror"])],
             ),
+            flag_set(
+                actions = ALL_CC_LINK_ACTION_NAMES,
+                flag_groups = [flag_group(flags = ["-Wl,--fatal-warnings"])],
+            ),
         ],
     )
 
