@@ -142,7 +142,7 @@ def _impl(ctx):
             ),
             flag_set(
                 actions = ALL_CC_COMPILE_ACTION_NAMES,
-                flag_groups = [flag_group(flags = ["-g"])],
+                flag_groups = [flag_group(flags = ["-g", "-fno-inline"])],
                 with_features = [with_feature_set(features = ["dbg"])],
             ),
         ],
